@@ -12,25 +12,36 @@ const {
 const gpu = new GPU();
 
 module.exports = function(kernel) {
-  const render = gpu
+  const gpuRender = gpu
     .createKernel(kernel)
     .dimensions([RENDER_WIDTH, RENDER_HEIGHT])
     .graphical(true)
   ;
 
   const setupCanvas = once(() => {
-    const canvas = render.getCanvas();
+    const canvas = gpuRender.getCanvas();
     canvas.style.position = 'absolute';
     canvas.style.left = '0px';
     canvas.style.top = '0px';
     canvas.style.width = '100vw';
     canvas.style.height = '100vh';
     canvas.style.objectFit = 'contain';
-    document.body.appendChild(canvas);
+    canvas.style.zIndex = '-1';
   });
 
-  return function(mouseX, mouseY, cameraData, cameraWidth, cameraHeight) {
-    render(mouseX, mouseY, cameraData, cameraWidth, cameraHeight);
-    setupCanvas();
+  return {
+    render(mouseX, mouseY, cameraData, cameraWidth, cameraHeight) {
+      gpuRender(mouseX, mouseY, cameraData, cameraWidth, cameraHeight);
+      setupCanvas();
+
+      const canvas = gpuRender.getCanvas();
+
+      if (!canvas.parentNode) {
+        document.body.appendChild(canvas);
+      }
+    },
+    stop() {
+      gpuRender.getCanvas().remove();
+    },
   };
 };

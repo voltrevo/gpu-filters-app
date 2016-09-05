@@ -9,7 +9,6 @@ module.exports = function() {
   fpsDisplay.style.borderRadius = '10px';
   fpsDisplay.style.backgroundColor = '#444';
   fpsDisplay.style.color = '#fff';
-  fpsDisplay.style.zIndex = '1';
 
   if (document.body) {
     document.body.appendChild(fpsDisplay);

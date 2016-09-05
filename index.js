@@ -2,6 +2,10 @@
 
 window.addEventListener('load', () => {
   navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+    document.body.style.backgroundColor = '#000';
+    document.body.style.height = '100vh';
+    document.body.style.overflow = 'hidden';
+
     const video = document.createElement('video');
     video.srcObject = stream;
     video.play();
@@ -12,7 +16,5 @@ window.addEventListener('load', () => {
     video.style.width = '100vw';
     video.style.height = '100vh';
     video.style.objectFit = 'contain';
-    document.body.style.height = '100vh';
-    document.body.style.overflow = 'hidden';
   });
 });

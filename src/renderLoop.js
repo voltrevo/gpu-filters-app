@@ -4,6 +4,7 @@ module.exports = function(render) {
   let time = Date.now();
 
   let fps = 0;
+  let requestId = null;
 
   const loop = () => {
     const dt = Date.now() - time;
@@ -19,12 +20,12 @@ module.exports = function(render) {
 
     render(dt, fps);
 
-    window.requestAnimationFrame(loop);
+    requestId = window.requestAnimationFrame(loop);
   };
 
-  window.requestAnimationFrame(loop);
+  requestId = window.requestAnimationFrame(loop);
 
   return {
-    stop: () => window.cancelAnimationFrame(loop),
+    stop: () => window.cancelAnimationFrame(requestId),
   };
 };

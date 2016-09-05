@@ -4,8 +4,11 @@ const GPU = require('./GPU.js');
 
 const gpu = new GPU();
 
-const RENDER_WIDTH = 160;
-const RENDER_HEIGHT = 90;
+const RENDER_WIDTH = 1280;
+const RENDER_HEIGHT = 720;
+
+const CAMERA_WIDTH = 160;
+const CAMERA_HEIGHT = 90;
 
 const range = (n) => (new Array(n)).fill(0).map((x, i) => i);
 
@@ -22,21 +25,21 @@ window.addEventListener('load', () => {
     video.play();
 
     const videoCanvas = document.createElement('canvas');
-    videoCanvas.width = RENDER_WIDTH;
-    videoCanvas.height = RENDER_HEIGHT;
+    videoCanvas.width = CAMERA_WIDTH;
+    videoCanvas.height = CAMERA_HEIGHT;
     const videoCtx = videoCanvas.getContext('2d');
 
-    const cameraData = range(RENDER_HEIGHT).map(() => range(4 * RENDER_WIDTH));
+    const cameraData = range(CAMERA_HEIGHT).map(() => range(4 * CAMERA_WIDTH));
 
     getCameraData = () => {
-      videoCtx.drawImage(video, 0, 0, RENDER_WIDTH, RENDER_HEIGHT);
-      const raw = videoCtx.getImageData(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+      videoCtx.drawImage(video, 0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+      const raw = videoCtx.getImageData(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 
-      for (let i = 0; i !== RENDER_HEIGHT; i++) {
-        for (let j = 0; j !== RENDER_WIDTH; j++) {
-          const index = 4 * (i * RENDER_WIDTH + j);
+      for (let i = 0; i !== CAMERA_HEIGHT; i++) {
+        for (let j = 0; j !== CAMERA_WIDTH; j++) {
+          const index = 4 * (i * CAMERA_WIDTH + j);
           for (let k = 0; k !== 4; k++) {
-            cameraData[RENDER_HEIGHT - 1 - i][4 * j + k] = raw.data[index + k] / 255;
+            cameraData[CAMERA_HEIGHT - 1 - i][4 * j + k] = raw.data[index + k] / 255;
           }
         }
       }
@@ -57,11 +60,13 @@ window.addEventListener('load', () => {
 
   window.requestAnimationFrame(animLoop);
 
-  const render = gpu.createKernel(function(mouseX, mouseY, cameraData) {
+  const render = gpu.createKernel(function(mouseX, mouseY, cameraData, cameraWidth, cameraHeight) {
     /* eslint-disable no-var */
-    var cameraRed = cameraData[this.thread.y][4 * this.thread.x];
-    var cameraGreen = cameraData[this.thread.y][4 * this.thread.x + 1];
-    var cameraBlue = cameraData[this.thread.y][4 * this.thread.x + 2];
+    var cameraX = Math.floor(this.thread.x / this.dimensions.x * cameraWidth);
+    var cameraY = Math.floor(this.thread.y / this.dimensions.y * cameraHeight);
+    var cameraRed = cameraData[cameraY][4 * cameraX];
+    var cameraGreen = cameraData[cameraY][4 * cameraX + 1];
+    var cameraBlue = cameraData[cameraY][4 * cameraX + 2];
 
     // A circle of this radius is the largest one that would fit inside the render
     var standardRadius = 0.5 * this.dimensions.y;
@@ -88,7 +93,7 @@ window.addEventListener('load', () => {
     /* eslint-enable no-var */
   }).dimensions([RENDER_WIDTH, RENDER_HEIGHT]).graphical(true);
 
-  render(0, 0, [0]);
+  render(0, 0, [0], CAMERA_WIDTH, CAMERA_HEIGHT);
 
   const canvas = render.getCanvas();
   canvas.style.position = 'absolute';
@@ -147,6 +152,6 @@ window.addEventListener('load', () => {
       return;
     }
 
-    render(mouseX, mouseY, getCameraData());
+    render(mouseX, mouseY, getCameraData(), CAMERA_WIDTH, CAMERA_HEIGHT);
   };
 });

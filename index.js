@@ -4,8 +4,8 @@ const GPU = require('./GPU.js');
 
 const gpu = new GPU();
 
-const RENDER_WIDTH = 1280;
-const RENDER_HEIGHT = 720;
+const RENDER_WIDTH = 160;
+const RENDER_HEIGHT = 90;
 
 const range = (n) => (new Array(n)).fill(0).map((x, i) => i);
 

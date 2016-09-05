@@ -9,9 +9,13 @@ module.exports = function(render) {
     const dt = Date.now() - time;
     time += dt;
 
-    const decay = Math.exp(-dt / 1000);
+    const decay = Math.exp(-dt / 500);
     const currFps = 1000 / dt;
     fps = decay * fps + (1 - decay) * currFps;
+
+    if (fps !== fps) { // eslint-disable-line no-self-compare
+      fps = 0;
+    }
 
     render(dt, fps);
 

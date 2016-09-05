@@ -4,12 +4,12 @@ const once = require('lodash/once');
 
 const GPU = require('./GPU.js');
 
+const gpu = new GPU();
+
 const {
   RENDER_WIDTH,
   RENDER_HEIGHT,
 } = require('./constants.js');
-
-const gpu = new GPU();
 
 module.exports = function(kernel) {
   const gpuRender = gpu

@@ -1,6 +1,7 @@
 'use strict';
 
 const colorSwapWithCircle = require('./colorSwapWithCircle.js');
+const plainCamera = require('./plainCamera.js');
 
 const {
   RENDER_HEIGHT,
@@ -18,9 +19,8 @@ const renderMousePos = require('./RenderMousePos.js')(RENDER_WIDTH, RENDER_HEIGH
 
 const filters = {
   'Color Swap with Circle': colorSwapWithCircle,
+  'Plain Camera': plainCamera,
 };
-
-const renderers = {};
 
 window.addEventListener('load', () => {
   document.body.style.fontFamily = 'sans-serif';
@@ -36,9 +36,7 @@ window.addEventListener('load', () => {
       currRenderLoop.stop();
     }
 
-    const filter = filters[filterName];
-    const renderer = renderers[filterName] || FullSizeRenderer(filter);
-    renderers[filterName] = renderer;
+    const renderer = FullSizeRenderer(filters[filterName]);
     currRenderer = renderer;
 
     currRenderLoop = renderLoop((dt, fps) => {

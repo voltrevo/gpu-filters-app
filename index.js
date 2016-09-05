@@ -8,6 +8,8 @@ const RENDER_WIDTH = 1280;
 const RENDER_HEIGHT = 720;
 
 window.addEventListener('load', () => {
+  document.body.style.fontFamily = 'sans-serif';
+
   // navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
   //   document.body.style.backgroundColor = '#000';
   //   document.body.style.height = '100vh';
@@ -26,9 +28,12 @@ window.addEventListener('load', () => {
   // });
 
   let draw;
+  let time = Date.now();
 
   const animLoop = () => {
-    draw();
+    const dt = Date.now() - time;
+    time += dt;
+    draw(dt);
     window.requestAnimationFrame(animLoop);
   };
 
@@ -46,7 +51,13 @@ window.addEventListener('load', () => {
       red = 1;
     }
 
-    this.color(red, (this.thread.x % 256) / 255, (this.thread.y % 256) / 255, 1);
+    var green = this.thread.x / mouseX;
+    green -= Math.floor(green);
+
+    var blue = this.thread.y / mouseY;
+    blue -= Math.floor(blue);
+
+    this.color(red, green, blue, 1);
     /* eslint-enable no-var */
   }).dimensions([RENDER_WIDTH, RENDER_HEIGHT]).graphical(true);
 
@@ -86,7 +97,23 @@ window.addEventListener('load', () => {
     mouseY = RENDER_HEIGHT - mouseY;
   });
 
-  draw = () => {
+  const fpsDisplay = document.createElement('div');
+  fpsDisplay.style.position = 'absolute';
+  fpsDisplay.style.right = '10px';
+  fpsDisplay.style.top = '10px';
+  fpsDisplay.style.padding = '10px';
+  fpsDisplay.style.borderRadius = '10px';
+  fpsDisplay.style.backgroundColor = '#444';
+  fpsDisplay.style.color = '#fff';
+
+  document.body.appendChild(fpsDisplay);
+
+  let fps = 60;
+
+  draw = (dt) => {
+    const currFps = 1000 / dt;
+    fps = 0.99 * fps + 0.01 * currFps;
+    fpsDisplay.textContent = `FPS: ${fps.toFixed(1)}`;
     render(mouseX, mouseY);
   };
 });

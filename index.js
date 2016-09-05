@@ -51,11 +51,11 @@ window.addEventListener('load', () => {
       red = 1;
     }
 
-    var green = this.thread.x / mouseX;
-    green -= Math.floor(green);
+    var green = 3.1416 * this.thread.x / mouseX;
+    green = Math.cos(green) * Math.cos(green);
 
-    var blue = this.thread.y / mouseY;
-    blue -= Math.floor(blue);
+    var blue = 3.1416 * this.thread.y / mouseY;
+    blue = Math.cos(blue) * Math.cos(blue);
 
     this.color(red, green, blue, 1);
     /* eslint-enable no-var */

@@ -12,6 +12,7 @@ const {
 } = require('./constants.js');
 
 const getCameraData = require('./getCameraData.js')();
+const renderLoop = require('./renderLoop.js');
 
 const filters = {
   'Color Swap with Circle': colorSwapWithCircle,
@@ -23,18 +24,6 @@ window.addEventListener('load', () => {
   document.body.style.fontFamily = 'sans-serif';
   document.body.style.height = '100vh';
   document.body.style.overflow = 'hidden';
-
-  let draw;
-  let time = Date.now();
-
-  const animLoop = () => {
-    const dt = Date.now() - time;
-    time += dt;
-    draw(dt);
-    window.requestAnimationFrame(animLoop);
-  };
-
-  window.requestAnimationFrame(animLoop);
 
   const render = gpu
     .createKernel(colorSwapWithCircle)
@@ -89,12 +78,7 @@ window.addEventListener('load', () => {
 
   document.body.appendChild(fpsDisplay);
 
-  let fps = 60;
-
-  draw = (dt) => {
-    const decay = Math.exp(-dt / 1000);
-    const currFps = 1000 / dt;
-    fps = decay * fps + (1 - decay) * currFps;
+  renderLoop((dt, fps) => {
     fpsDisplay.textContent = `FPS: ${fps.toFixed(1)}`;
 
     const cameraData = getCameraData();
@@ -104,5 +88,5 @@ window.addEventListener('load', () => {
     }
 
     render(mouseX, mouseY, cameraData, CAMERA_WIDTH, CAMERA_HEIGHT);
-  };
+  });
 });

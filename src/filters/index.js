@@ -5,5 +5,6 @@
 module.exports = {
   'Color Swap with Circle': require('./colorSwapWithCircle.js'),
   'Plain Camera': require('./plainCamera.js'),
-  'Interpolated Camera': require('./interpolatedCamera'),
+  'Interpolated Camera': require('./interpolatedCamera.js'),
+  'Invert Dots': require('./invertDots.js'),
 };

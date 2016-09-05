@@ -31,7 +31,9 @@ module.exports = function() {
           for (let j = 0; j !== CAMERA_WIDTH; j++) {
             const index = 4 * (i * CAMERA_WIDTH + j);
             for (let k = 0; k !== 4; k++) {
-              cameraData[CAMERA_HEIGHT - 1 - i][4 * j + k] = raw.data[index + k] / 255;
+              cameraData[CAMERA_HEIGHT - 1 - i][4 * (CAMERA_WIDTH - 1 - j) + k] = (
+                raw.data[index + k] / 255
+              );
             }
           }
         }

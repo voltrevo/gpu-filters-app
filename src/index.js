@@ -1,8 +1,5 @@
 'use strict';
 
-const colorSwapWithCircle = require('./colorSwapWithCircle.js');
-const plainCamera = require('./plainCamera.js');
-
 const {
   RENDER_HEIGHT,
   RENDER_WIDTH,
@@ -10,17 +7,13 @@ const {
   CAMERA_WIDTH,
 } = require('./constants.js');
 
+const filters = require('./filters');
 const FilterSelector = require('./FilterSelector.js');
 const fpsDisplay = require('./FpsDisplay')();
 const FullSizeRenderer = require('./FullSizeRenderer');
 const getCameraData = require('./getCameraData.js')();
 const renderLoop = require('./renderLoop.js');
 const renderMousePos = require('./RenderMousePos.js')(RENDER_WIDTH, RENDER_HEIGHT);
-
-const filters = {
-  'Color Swap with Circle': colorSwapWithCircle,
-  'Plain Camera': plainCamera,
-};
 
 window.addEventListener('load', () => {
   document.body.style.fontFamily = 'sans-serif';

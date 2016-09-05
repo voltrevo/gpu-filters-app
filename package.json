@@ -4,7 +4,8 @@
   "description": "hackday",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nakedjs src/index.js"
   },
   "author": "Andrew Morris",
   "license": "MIT",
@@ -13,7 +14,8 @@
     "eslint-config-airbnb": "^10.0.1",
     "eslint-plugin-import": "^1.14.0",
     "eslint-plugin-jsx-a11y": "^2.2.1",
-    "eslint-plugin-react": "^6.2.0"
+    "eslint-plugin-react": "^6.2.0",
+    "nakedjs": "^0.1.0"
   },
   "dependencies": {
     "lodash": "^4.15.0"

@@ -4,55 +4,25 @@ const GPU = require('./GPU.js');
 
 const colorSwapWithCircle = require('./colorSwapWithCircle.js');
 
+const {
+  RENDER_HEIGHT,
+  RENDER_WIDTH,
+  CAMERA_HEIGHT,
+  CAMERA_WIDTH,
+} = require('./constants.js');
+
+const getCameraData = require('./getCameraData.js')();
+
 const filters = {
   'Color Swap with Circle': colorSwapWithCircle,
 };
 
 const gpu = new GPU();
 
-const RENDER_WIDTH = 1280;
-const RENDER_HEIGHT = 720;
-
-const CAMERA_WIDTH = 160;
-const CAMERA_HEIGHT = 90;
-
-const range = (n) => (new Array(n)).fill(0).map((x, i) => i);
-
 window.addEventListener('load', () => {
   document.body.style.fontFamily = 'sans-serif';
   document.body.style.height = '100vh';
   document.body.style.overflow = 'hidden';
-
-  let getCameraData;
-
-  navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
-    const video = document.createElement('video');
-    video.srcObject = stream;
-    video.play();
-
-    const videoCanvas = document.createElement('canvas');
-    videoCanvas.width = CAMERA_WIDTH;
-    videoCanvas.height = CAMERA_HEIGHT;
-    const videoCtx = videoCanvas.getContext('2d');
-
-    const cameraData = range(CAMERA_HEIGHT).map(() => range(4 * CAMERA_WIDTH));
-
-    getCameraData = () => {
-      videoCtx.drawImage(video, 0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-      const raw = videoCtx.getImageData(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-
-      for (let i = 0; i !== CAMERA_HEIGHT; i++) {
-        for (let j = 0; j !== CAMERA_WIDTH; j++) {
-          const index = 4 * (i * CAMERA_WIDTH + j);
-          for (let k = 0; k !== 4; k++) {
-            cameraData[CAMERA_HEIGHT - 1 - i][4 * j + k] = raw.data[index + k] / 255;
-          }
-        }
-      }
-
-      return cameraData;
-    };
-  });
 
   let draw;
   let time = Date.now();
@@ -127,10 +97,12 @@ window.addEventListener('load', () => {
     fps = decay * fps + (1 - decay) * currFps;
     fpsDisplay.textContent = `FPS: ${fps.toFixed(1)}`;
 
-    if (!getCameraData) {
+    const cameraData = getCameraData();
+
+    if (!cameraData) {
       return;
     }
 
-    render(mouseX, mouseY, getCameraData(), CAMERA_WIDTH, CAMERA_HEIGHT);
+    render(mouseX, mouseY, cameraData, CAMERA_WIDTH, CAMERA_HEIGHT);
   };
 });

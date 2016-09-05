@@ -1,5 +1,7 @@
 'use strict';
 
+const once = require('lodash/once');
+
 const GPU = require('./GPU.js');
 
 const colorSwapWithCircle = require('./colorSwapWithCircle.js');
@@ -31,16 +33,16 @@ window.addEventListener('load', () => {
     .graphical(true)
   ;
 
-  render(0, 0, [0], CAMERA_WIDTH, CAMERA_HEIGHT);
-
-  const canvas = render.getCanvas();
-  canvas.style.position = 'absolute';
-  canvas.style.left = '0px';
-  canvas.style.top = '0px';
-  canvas.style.width = '100vw';
-  canvas.style.height = '100vh';
-  canvas.style.objectFit = 'contain';
-  document.body.appendChild(canvas);
+  const setupCanvas = once(() => {
+    const canvas = render.getCanvas();
+    canvas.style.position = 'absolute';
+    canvas.style.left = '0px';
+    canvas.style.top = '0px';
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.objectFit = 'contain';
+    document.body.appendChild(canvas);
+  });
 
   let mouseX = 0;
   let mouseY = 0;
@@ -75,6 +77,7 @@ window.addEventListener('load', () => {
   fpsDisplay.style.borderRadius = '10px';
   fpsDisplay.style.backgroundColor = '#444';
   fpsDisplay.style.color = '#fff';
+  fpsDisplay.style.zIndex = '1';
 
   document.body.appendChild(fpsDisplay);
 
@@ -88,5 +91,6 @@ window.addEventListener('load', () => {
     }
 
     render(mouseX, mouseY, cameraData, CAMERA_WIDTH, CAMERA_HEIGHT);
+    setupCanvas();
   });
 });

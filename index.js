@@ -59,27 +59,32 @@ window.addEventListener('load', () => {
 
   const render = gpu.createKernel(function(mouseX, mouseY, cameraData) {
     /* eslint-disable no-var */
-    var red = 0;
+    var cameraRed = cameraData[this.thread.y][4 * this.thread.x];
+    var cameraGreen = cameraData[this.thread.y][4 * this.thread.x + 1];
+    var cameraBlue = cameraData[this.thread.y][4 * this.thread.x + 2];
+
+    // A circle of this radius is the largest one that would fit inside the render
+    var standardRadius = 0.5 * this.dimensions.y;
+
+    var radius = 0.3 * standardRadius;
 
     if (
       (this.thread.x - mouseX) * (this.thread.x - mouseX) +
       (this.thread.y - mouseY) * (this.thread.y - mouseY) <
-      20 * 20
+      radius * radius
     ) {
-      red = 1;
+      this.color(cameraRed, cameraGreen, cameraBlue, 1);
+    } else {
+      this.color(cameraGreen, cameraRed, 1 - cameraBlue, 1);
     }
 
-    var index = 4 * (this.dimensions.x * this.thread.y + this.thread.x);
+    // var green = 3.1416 * this.thread.x / mouseX;
+    // green = Math.cos(green) * Math.cos(green);
 
-    red = cameraData[index];
+    // var blue = 3.1416 * this.thread.y / mouseY;
+    // blue = Math.cos(blue) * Math.cos(blue);
 
-    var green = 3.1416 * this.thread.x / mouseX;
-    green = Math.cos(green) * Math.cos(green);
-
-    var blue = 3.1416 * this.thread.y / mouseY;
-    blue = Math.cos(blue) * Math.cos(blue);
-
-    this.color(red, green, blue, 1);
+    // this.color(cameraGreen, cameraRed, 1 - cameraBlue, 1);
     /* eslint-enable no-var */
   }).dimensions([RENDER_WIDTH, RENDER_HEIGHT]).graphical(true);
 

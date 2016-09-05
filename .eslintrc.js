@@ -15,5 +15,6 @@ module.exports = {
     'no-mixed-operators': 0,
     'vars-on-top': 0,
     'object-curly-spacing': 0,
+    'new-cap': 0,
   },
 };

@@ -13,6 +13,7 @@ const {
   CAMERA_WIDTH,
 } = require('./constants.js');
 
+const fpsDisplay = require('./FpsDisplay')();
 const getCameraData = require('./getCameraData.js')();
 const renderLoop = require('./renderLoop.js');
 const renderMousePos = require('./RenderMousePos.js')(RENDER_WIDTH, RENDER_HEIGHT);
@@ -44,18 +45,6 @@ window.addEventListener('load', () => {
     canvas.style.objectFit = 'contain';
     document.body.appendChild(canvas);
   });
-
-  const fpsDisplay = document.createElement('div');
-  fpsDisplay.style.position = 'absolute';
-  fpsDisplay.style.right = '10px';
-  fpsDisplay.style.top = '10px';
-  fpsDisplay.style.padding = '10px';
-  fpsDisplay.style.borderRadius = '10px';
-  fpsDisplay.style.backgroundColor = '#444';
-  fpsDisplay.style.color = '#fff';
-  fpsDisplay.style.zIndex = '1';
-
-  document.body.appendChild(fpsDisplay);
 
   renderLoop((dt, fps) => {
     fpsDisplay.textContent = `FPS: ${fps.toFixed(1)}`;

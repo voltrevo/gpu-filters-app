@@ -7,4 +7,5 @@ module.exports = {
   'Plain Camera': require('./plainCamera.js'),
   'Interpolated Camera': require('./interpolatedCamera.js'),
   'Invert Dots': require('./invertDots.js'),
+  'Fish Eye': require('./fishEye.js'),
 };

@@ -7,25 +7,43 @@ const gpu = new GPU();
 const RENDER_WIDTH = 1280;
 const RENDER_HEIGHT = 720;
 
+const range = (n) => (new Array(n)).fill(0).map((x, i) => i);
+
 window.addEventListener('load', () => {
   document.body.style.fontFamily = 'sans-serif';
+  document.body.style.height = '100vh';
+  document.body.style.overflow = 'hidden';
 
-  // navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
-  //   document.body.style.backgroundColor = '#000';
-  //   document.body.style.height = '100vh';
-  //   document.body.style.overflow = 'hidden';
+  let getCameraData;
 
-  //   const video = document.createElement('video');
-  //   video.srcObject = stream;
-  //   video.play();
-  //   document.body.appendChild(video);
-  //   video.style.position = 'absolute';
-  //   video.style.left = '0px';
-  //   video.style.top = '0px';
-  //   video.style.width = '100vw';
-  //   video.style.height = '100vh';
-  //   video.style.objectFit = 'contain';
-  // });
+  navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    video.play();
+
+    const videoCanvas = document.createElement('canvas');
+    videoCanvas.width = RENDER_WIDTH;
+    videoCanvas.height = RENDER_HEIGHT;
+    const videoCtx = videoCanvas.getContext('2d');
+
+    const cameraData = range(RENDER_HEIGHT).map(() => range(4 * RENDER_WIDTH));
+
+    getCameraData = () => {
+      videoCtx.drawImage(video, 0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+      const raw = videoCtx.getImageData(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+
+      for (let i = 0; i !== RENDER_HEIGHT; i++) {
+        for (let j = 0; j !== RENDER_WIDTH; j++) {
+          const index = 4 * (i * RENDER_WIDTH + j);
+          for (let k = 0; k !== 4; k++) {
+            cameraData[RENDER_HEIGHT - 1 - i][4 * j + k] = raw.data[index + k] / 255;
+          }
+        }
+      }
+
+      return cameraData;
+    };
+  });
 
   let draw;
   let time = Date.now();
@@ -39,7 +57,7 @@ window.addEventListener('load', () => {
 
   window.requestAnimationFrame(animLoop);
 
-  const render = gpu.createKernel(function(mouseX, mouseY) {
+  const render = gpu.createKernel(function(mouseX, mouseY, cameraData) {
     /* eslint-disable no-var */
     var red = 0;
 
@@ -51,6 +69,10 @@ window.addEventListener('load', () => {
       red = 1;
     }
 
+    var index = 4 * (this.dimensions.x * this.thread.y + this.thread.x);
+
+    red = cameraData[index];
+
     var green = 3.1416 * this.thread.x / mouseX;
     green = Math.cos(green) * Math.cos(green);
 
@@ -61,7 +83,7 @@ window.addEventListener('load', () => {
     /* eslint-enable no-var */
   }).dimensions([RENDER_WIDTH, RENDER_HEIGHT]).graphical(true);
 
-  render(0, 0);
+  render(0, 0, [0]);
 
   const canvas = render.getCanvas();
   canvas.style.position = 'absolute';
@@ -111,9 +133,15 @@ window.addEventListener('load', () => {
   let fps = 60;
 
   draw = (dt) => {
+    const decay = Math.exp(-dt / 1000);
     const currFps = 1000 / dt;
-    fps = 0.99 * fps + 0.01 * currFps;
+    fps = decay * fps + (1 - decay) * currFps;
     fpsDisplay.textContent = `FPS: ${fps.toFixed(1)}`;
-    render(mouseX, mouseY);
+
+    if (!getCameraData) {
+      return;
+    }
+
+    render(mouseX, mouseY, getCameraData());
   };
 });

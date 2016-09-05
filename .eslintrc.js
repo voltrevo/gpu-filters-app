@@ -14,5 +14,6 @@ module.exports = {
     'space-before-function-paren': 0,
     'no-mixed-operators': 0,
     'vars-on-top': 0,
+    'object-curly-spacing': 0,
   },
 };

@@ -29,5 +29,11 @@ window.addEventListener('load', () => {
   render();
 
   const canvas = render.getCanvas();
+  canvas.style.position = 'absolute';
+  canvas.style.left = '0px';
+  canvas.style.top = '0px';
+  canvas.style.width = '100vw';
+  canvas.style.height = '100vh';
+  canvas.style.objectFit = 'contain';
   document.body.appendChild(canvas);
 });

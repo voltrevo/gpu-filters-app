@@ -64,6 +64,15 @@ module.exports = function(mouseX, mouseY, cameraData, cameraWidth, cameraHeight)
     m *= -1;
   }
 
-  this.color(intensity * cameraRed, intensity * cameraGreen, intensity * cameraBlue, 1);
+  function invert(x, c) {
+    return x + c - 2 * x * c;
+  }
+
+  this.color(
+    invert(intensity, cameraRed),
+    invert(intensity, cameraGreen),
+    invert(intensity, cameraBlue),
+    1
+  );
   /* eslint-enable no-var, yoda, no-lonely-if */
 };

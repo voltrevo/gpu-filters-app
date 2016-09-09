@@ -9,4 +9,5 @@ module.exports = {
   'Invert Dots': require('./invertDots.js'),
   'Fish Eye': require('./fishEye.js'),
   'Color Swap Fish Eye': require('./colorSwapFishEye'),
+  Rays: require('./rays.js'),
 };
